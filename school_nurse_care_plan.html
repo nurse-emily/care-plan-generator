@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementary School Nurse - Care Plan Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #4a6741 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c5aa0;
+            font-size: 1.1em;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4a6741;
+            box-shadow: 0 0 0 3px rgba(74, 103, 65, 0.1);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .diagnosis-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4a6741;
+        }
+
+        .diagnosis-section h3 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            border-color: #4a6741;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .checkbox-item.selected {
+            border-color: #4a6741;
+            background: #f0f8f0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a6741 0%, #2c5aa0 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(74, 103, 65, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-clear {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .care-plan-preview {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .care-plan-preview h3 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+            border-bottom: 2px solid #4a6741;
+            padding-bottom: 10px;
+        }
+
+        .preview-section {
+            margin-bottom: 20px;
+        }
+
+        .preview-section h4 {
+            color: #4a6741;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4a6741;
+        }
+
+        .preview-content ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .preview-content li {
+            margin-bottom: 5px;
+        }
+
+        .emergency-highlight {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: none;
+            }
+
+            .header {
+                background: #2c5aa0;
+                color: white;
+                print-color-adjust: exact;
+            }
+
+            .form-container {
+                display: none;
+            }
+
+            .care-plan-preview {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                margin: 0;
+                padding: 20px;
+                background: white;
+                border: none;
+                page-break-inside: avoid;
+            }
+
+            .buttons {
+                display: none;
+            }
+
+            .emergency-highlight,
+            .warning-box {
+                print-color-adjust: exact;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Care Plan Generator</h1>
+            <p>Elementary School Nurse - Automated Care Plan System</p>
+        </div>
+
+        <div class="form-container">
+            <form id="carePlanForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentName">Student Name:</label>
+                        <input type="text" id="studentName" name="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">Student ID:</label>
+                        <input type="text" id="studentId" name="studentId">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="grade">Grade:</label>
+                        <select id="grade" name="grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="Kindergarten">Kindergarten</option>
+                            <option value="1st Grade">1st Grade</option>
+                            <option value="2nd Grade">2nd Grade</option>
+                            <option value="3rd Grade">3rd Grade</option>
+                            <option value="4th Grade">4th Grade</option>
+                            <option value="5th Grade">5th Grade</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacher">Teacher:</label>
+                        <input type="text" id="teacher" name="teacher">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth:</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth">
+                    </div>
+                    <div class="form-group">
+                        <label for="emergencyContact">Emergency Contact:</label>
+                        <input type="text" id="emergencyContact" name="emergencyContact">
+                    </div>
+                </div>
+
+                <div class="diagnosis-section">
+                    <h3>🏥 Select Diagnosis/Conditions</h3>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="asthma" name="diagnosis" value="Asthma">
+                            <label for="asthma">Asthma</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="diabetes" name="diagnosis" value="Type 1 Diabetes">
+                            <label for="diabetes">Type 1 Diabetes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="allergies" name="diagnosis" value="Severe Food Allergies">
+                            <label for="allergies">Severe Food Allergies</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="epilepsy" name="diagnosis" value="Epilepsy/Seizure Disorder">
+                            <label for="epilepsy">Epilepsy/Seizure Disorder</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="adhd" name="diagnosis" value="ADHD">
+                            <label for="adhd">ADHD</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="anxiety" name="diagnosis" value="Anxiety Disorder">
+                            <label for="anxiety">Anxiety Disorder</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hearing" name="diagnosis" value="Hearing Impairment">
+                            <label for="hearing">Hearing Impairment</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="vision" name="diagnosis" value="Vision Impairment">
+                            <label for="vision">Vision Impairment</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mobility" name="diagnosis" value="Mobility Issues">
+                            <label for="mobility">Mobility Issues</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="autism" name="diagnosis" value="Autism Spectrum Disorder">
+                            <label for="autism">Autism Spectrum Disorder</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalNotes">Additional Notes:</label>
+                    <textarea id="additionalNotes" name="additionalNotes"
+                        placeholder="Any additional information specific to this student..."></textarea>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn btn-primary" onclick="generateCarePlan()">Generate Care
+                        Plan</button>
+                    <button type="button" class="btn btn-secondary" onclick="printCarePlan()">Print Care Plan</button>
+                    <button type="button" class="btn btn-clear" onclick="clearForm()">Clear Form</button>
+                </div>
+            </form>
+
+            <div class="care-plan-preview" id="carePlanPreview">
+                <h3>📋 STUDENT CARE PLAN</h3>
+                <div id="previewContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Care plan templates for each diagnosis
+        const careplanTemplates = {
+            'Asthma': {
+                medications: 'Albuterol inhaler (rescue), Flovent inhaler (daily controller)',
+                allergies: 'Environmental triggers: dust, pollen, strong scents, cold air',
+                symptoms: 'Wheezing, shortness of breath, chest tightness, persistent cough, difficulty speaking in full sentences',
+                emergencyPlan: `<div class="emergency-highlight">
+                    <strong>EMERGENCY SIGNS:</strong> Severe difficulty breathing, inability to speak, blue lips/fingernails, peak flow below 50%
+                    <br><br>
+                    <strong>IMMEDIATE ACTIONS:</strong>
+                    <ul>
+                        <li>Administer rescue inhaler (albuterol) immediately</li>
+                        <li>Have student sit upright and remain calm</li>
+                        <li>Call 911 if no improvement within 10 minutes</li>
+                        <li>Contact parents/emergency contacts</li>
+                        <li>Continue rescue medication every 20 minutes until help arrives</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Allow use of inhaler without permission, seated near front of class, modified PE activities, air purifier in classroom if possible',
+                monitoring: 'Daily peak flow readings, pre-medication before PE, weather-related trigger awareness'
+            },
+            'Type 1 Diabetes': {
+                medications: 'Insulin (rapid-acting and long-acting), Glucagon emergency kit, Blood glucose meter supplies',
+                allergies: 'Monitor for insulin allergies (rare), adhesive sensitivity from CGM/pump sites',
+                symptoms: 'High blood sugar: excessive thirst, frequent urination, fatigue, nausea. Low blood sugar: shakiness, sweating, confusion, irritability',
+                emergencyPlan: `<div class="emergency-highlight">
+                    <strong>HYPOGLYCEMIA (LOW BLOOD SUGAR - BELOW 70):</strong>
+                    <ul>
+                        <li>Give 15g fast-acting carbs (glucose tablets, juice)</li>
+                        <li>Recheck blood sugar in 15 minutes</li>
+                        <li>If still low, repeat treatment</li>
+                        <li>If unconscious, use glucagon kit and call 911</li>
+                    </ul>
+                    <br>
+                    <strong>HYPERGLYCEMIA (HIGH BLOOD SUGAR - ABOVE 300):</strong>
+                    <ul>
+                        <li>Check for ketones, contact parents immediately</li>
+                        <li>Encourage water intake</li>
+                        <li>Call 911 if ketones present or vomiting occurs</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Unlimited bathroom passes, snacks as needed, blood sugar monitoring during class, alternative PE activities during illness',
+                monitoring: 'Blood glucose checks 4x daily, ketone monitoring when sick, insulin administration tracking'
+            },
+            'Severe Food Allergies': {
+                medications: 'EpiPen (epinephrine auto-injector), Benadryl, Inhaler if asthma component',
+                allergies: 'Specific allergens: peanuts, tree nuts, milk, eggs, shellfish, soy, wheat (customize based on student)',
+                symptoms: 'Mild: hives, itching, nausea, stomach cramps. Severe: difficulty breathing, swelling of face/throat, rapid pulse, dizziness',
+                emergencyPlan: `<div class="emergency-highlight">
+                    <strong>ANAPHYLAXIS EMERGENCY:</strong>
+                    <ul>
+                        <li>Administer EpiPen immediately to outer thigh</li>
+                        <li>Call 911 immediately</li>
+                        <li>Give second EpiPen if no improvement in 5-10 minutes</li>
+                        <li>Have student lie down with legs elevated</li>
+                        <li>Contact parents/emergency contacts</li>
+                        <li>Transport to hospital even if symptoms improve</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Allergen-free lunch table, hand washing before/after meals, alert all staff, EpiPen accessible at all times',
+                monitoring: 'Daily allergen exposure prevention, emergency medication expiration dates, staff training updates'
+            },
+            'Epilepsy/Seizure Disorder': {
+                medications: 'Anti-seizure medications (specific to student), Rescue medications (Diastat, Midazolam)',
+                allergies: 'Medication allergies (specific to anti-seizure drugs), photosensitivity triggers',
+                symptoms: 'Pre-seizure: aura, confusion, staring. During: convulsions, loss of consciousness, incontinence',
+                emergencyPlan: `<div class="emergency-highlight">
+                    <strong>DURING SEIZURE:</strong>
+                    <ul>
+                        <li>Stay calm, note time seizure started</li>
+                        <li>Clear area of harmful objects</li>
+                        <li>Do NOT restrain or put anything in mouth</li>
+                        <li>Turn on side if possible to prevent choking</li>
+                        <li>Call 911 if seizure lasts over 5 minutes</li>
+                        <li>Administer rescue medication as prescribed</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Seating away from hard surfaces, modified PE activities, extra time for assignments, frequent breaks',
+                monitoring: 'Seizure log documentation, medication compliance, trigger identification'
+            },
+            'ADHD': {
+                medications: 'Stimulant medications (Adderall, Ritalin), Non-stimulant options (Strattera)',
+                allergies: 'Medication sensitivities, food dye reactions (some students)',
+                symptoms: 'Inattention, hyperactivity, impulsivity, difficulty following directions, restlessness',
+                emergencyPlan: `<div class="warning-box">
+                    <strong>BEHAVIORAL CRISIS MANAGEMENT:</strong>
+                    <ul>
+                        <li>Provide calm, quiet environment</li>
+                        <li>Use clear, simple instructions</li>
+                        <li>Contact parents if behaviors escalate</li>
+                        <li>Implement behavior intervention plan</li>
+                        <li>Consider medication timing issues</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Preferential seating, movement breaks, reduced distractions, extended time for tests, frequent check-ins',
+                monitoring: 'Medication effectiveness tracking, behavioral observation, appetite and sleep patterns'
+            },
+            'Anxiety Disorder': {
+                medications: 'Anti-anxiety medications (as prescribed), PRN medications for acute episodes',
+                allergies: 'Medication sensitivities, stress-induced physical reactions',
+                symptoms: 'Excessive worry, restlessness, fatigue, difficulty concentrating, physical symptoms (headaches, stomachaches)',
+                emergencyPlan: `<div class="warning-box">
+                    <strong>ANXIETY CRISIS MANAGEMENT:</strong>
+                    <ul>
+                        <li>Provide calm, safe environment</li>
+                        <li>Use grounding techniques (5-4-3-2-1 method)</li>
+                        <li>Encourage slow, deep breathing</li>
+                        <li>Contact parents if symptoms persist</li>
+                        <li>Administer PRN medication if prescribed</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Quiet space for breaks, modified testing environment, advance notice of changes, counselor access',
+                monitoring: 'Daily anxiety level check-ins, trigger identification, coping strategy effectiveness'
+            },
+            'Hearing Impairment': {
+                medications: 'None typically required, hearing aid batteries/maintenance supplies',
+                allergies: 'Adhesive sensitivities from hearing aids, ear infection treatments',
+                symptoms: 'Difficulty hearing instructions, asking for repetition, turning head to hear better',
+                emergencyPlan: `<div class="warning-box">
+                    <strong>COMMUNICATION EMERGENCY:</strong>
+                    <ul>
+                        <li>Use visual cues and gestures</li>
+                        <li>Face the student when speaking</li>
+                        <li>Write down emergency instructions</li>
+                        <li>Ensure hearing aids are functional</li>
+                        <li>Contact interpreter if needed</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Front row seating, visual cues, written instructions, FM system use, interpreter services',
+                monitoring: 'Hearing aid functionality, battery levels, ear health checks'
+            },
+            'Vision Impairment': {
+                medications: 'Eye drops (if prescribed), protective eyewear',
+                allergies: 'Sensitivity to bright lights, eye drop ingredients',
+                symptoms: 'Difficulty seeing board, squinting, headaches, eye strain',
+                emergencyPlan: `<div class="warning-box">
+                    <strong>VISION EMERGENCY:</strong>
+                    <ul>
+                        <li>Provide verbal directions clearly</li>
+                        <li>Guide student safely during evacuation</li>
+                        <li>Ensure path is clear of obstacles</li>
+                        <li>Contact parents about vision changes</li>
+                        <li>Protect from bright lights if photosensitive</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Large print materials, magnification tools, optimal lighting, seating near board, extra time',
+                monitoring: 'Vision aid functionality, eye strain symptoms, lighting needs'
+            },
+            'Mobility Issues': {
+                medications: 'Pain medications, muscle relaxants, anti-inflammatory drugs',
+                allergies: 'Medication allergies, latex sensitivity (wheelchair/mobility aids)',
+                symptoms: 'Difficulty walking, fatigue, pain, balance issues, weakness',
+                emergencyPlan: `<div class="warning-box">
+                    <strong>MOBILITY EMERGENCY:</strong>
+                    <ul>
+                        <li>Assist with evacuation using appropriate methods</li>
+                        <li>Ensure wheelchair/mobility aid accessibility</li>
+                        <li>Contact parents about mobility changes</li>
+                        <li>Provide rest periods as needed</li>
+                        <li>Monitor for increased pain/fatigue</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Accessible seating, elevator access, modified PE, extra time between classes, ergonomic supports',
+                monitoring: 'Mobility aid maintenance, pain levels, fatigue patterns, therapy compliance'
+            },
+            'Autism Spectrum Disorder': {
+                medications: 'Behavioral medications (if prescribed), sensory regulation aids',
+                allergies: 'Sensory sensitivities, texture aversions, medication sensitivities',
+                symptoms: 'Difficulty with transitions, sensory overload, communication challenges, repetitive behaviors',
+                emergencyPlan: `<div class="warning-box">
+                    <strong>BEHAVIORAL CRISIS MANAGEMENT:</strong>
+                    <ul>
+                        <li>Reduce sensory stimuli (lights, noise)</li>
+                        <li>Use calm, clear communication</li>
+                        <li>Provide familiar comfort items</li>
+                        <li>Follow individualized behavior plan</li>
+                        <li>Contact parents and support team</li>
+                    </ul>
+                </div>`,
+                accommodations: 'Structured routine, sensory breaks, visual schedules, modified social expectations, quiet workspace',
+                monitoring: 'Behavioral patterns, sensory needs, communication progress, social interaction support'
+            }
+        };
+
+        // Add visual feedback for checkbox selection
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const item = this.closest('.checkbox-item');
+                if (this.checked) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        });
+
+        function generateCarePlan() {
+            const form = document.getElementById('carePlanForm');
+            const formData = new FormData(form);
+
+            // Get selected diagnoses
+            const selectedDiagnoses = [];
+            document.querySelectorAll('input[name="diagnosis"]:checked').forEach(checkbox => {
+                selectedDiagnoses.push(checkbox.value);
+            });
+
+            if (selectedDiagnoses.length === 0) {
+                alert('Please select at least one diagnosis to generate a care plan.');
+                return;
+            }
+
+            // Build the care plan preview
+            const previewContent = document.getElementById('previewContent');
+            const currentDate = new Date().toLocaleDateString();
+
+            let carePlanHTML = `
+                <div class="preview-section">
+                    <h4>Student Information</h4>
+                    <div class="preview-content">
+                        <p><strong>Name:</strong> ${formData.get('studentName') || 'Not specified'}</p>
+                        <p><strong>Student ID:</strong> ${formData.get('studentId') || 'Not specified'}</p>
+                        <p><strong>Grade:</strong> ${formData.get('grade') || 'Not specified'}</p>
+                        <p><strong>Teacher:</strong> ${formData.get('teacher') || 'Not specified'}</p>
+                        <p><strong>Date of Birth:</strong> ${formData.get('dateOfBirth') || 'Not specified'}</p>
+                        <p><strong>Emergency Contact:</strong> ${formData.get('emergencyContact') || 'Not specified'}</p>
+                        <p><strong>Care Plan Date:</strong> ${currentDate}</p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h4>Primary Diagnosis/Conditions</h4>
+                    <div class="preview-content">
+                        <p><strong>${selectedDiagnoses.join(', ')}</strong></p>
+                    </div>
+                </div>
+            `;
+
+            // Generate care plan sections for each selected diagnosis
+            selectedDiagnoses.forEach(diagnosis => {
+                const template = careplanTemplates[diagnosis];
+                if (template) {
+                    carePlanHTML += `
+                        <div class="preview-section">
+                            <h4>Care Plan for ${diagnosis}</h4>
+                            <div class="preview-content">
+                                <p><strong>Medications:</strong> ${template.medications}</p>
+                                <p><strong>Known Allergies/Triggers:</strong> ${template.allergies}</p>
+                                <p><strong>Symptoms to Monitor:</strong> ${template.symptoms}</p>
+                                <p><strong>Emergency Action Plan:</strong></p>
+                                ${template.emergencyPlan}
+                                <p><strong>Classroom Accommodations:</strong> ${template.accommodations}</p>
+                                <p><strong>Daily Monitoring:</strong> ${template.monitoring}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Add additional notes if provided
+            if (formData.get('additionalNotes')) {
+                carePlanHTML += `
+                    <div class="preview-section">
+                        <h4>Additional Notes</h4>
+                        <div class="preview-content">
+                            <p>${formData.get('additionalNotes')}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add signature section
+            carePlanHTML += `
+                <div class="preview-section">
+                    <h4>Signatures</h4>
+                    <div class="preview-content">
+                        <p><strong>School Nurse:</strong> _________________________ Date: _________</p>
+                        <p><strong>Parent/Guardian:</strong> _________________________ Date: _________</p>
+                        <p><strong>Principal:</strong> _________________________ Date: _________</p>
+                        <p><strong>Teacher:</strong> _________________________ Date: _________</p>
+                    </div>
+                </div>
+            `;
+
+            previewContent.innerHTML = carePlanHTML;
+
+            // Show the preview
+            document.getElementById('carePlanPreview').style.display = 'block';
+
+            // Scroll to preview
+            document.getElementById('carePlanPreview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function printCarePlan() {
+            const preview = document.getElementById('carePlanPreview');
+
+            // If no care plan yet, generate it
+            if (preview.style.display === 'none' || preview.innerHTML.trim() === '') {
+                generateCarePlan();
+            }
+
+            // Create a clone of the care plan for printing
+            const printWindow = window.open('', '_blank');
+            const doc = printWindow.document.open();
+            doc.write(`
+                <html>
+                    <head>
+                        <title>Print Care Plan</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                padding: 20px;
+                            }
+                            .header {
+                                text-align: center;
+                                margin-bottom: 20px;
+                            }
+                            .preview-section {
+                                margin-bottom: 20px;
+                            }
+                            .preview-content {
+                                padding: 10px;
+                                border: 1px solid #ccc; 
+                                border-radius: 8px;
+                            }
+                            .emergency-highlight {
+                                background: #ffebee;
+                                border-left: 4px solid #f44336;
+                                padding: 10px;
+                            }
+                            .warning-box {
+                                background: #fff3cd;
+                                border-left: 4px solid #ffc107;
+                                padding: 10px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>📋 Student Care Plan</h1>
+                        </div>
+                        ${preview.innerHTML}
+                    </body>
+                </html>
+            `);
+            doc.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all form data?')) {
+                document.getElementById('carePlanForm').reset();
+                document.getElementById('carePlanPreview').style.display = 'none';
+
+                // Remove selected class from checkboxes
+                document.querySelectorAll('.checkbox-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+            }
+        }
+
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                container.style.transition = 'all 0.6s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
